@@ -1,0 +1,7 @@
+-r requirements.txt
+
+pytest ~= 8.4
+pytest-mock ~= 3.14
+mfd-powermanagement >= 1.12.0
+mfd-cli-client >= 1.11.0
+coverage ~= 7.3.0

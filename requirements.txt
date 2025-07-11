@@ -1,0 +1,15 @@
+mfd-connect >= 7.12.0
+mfd-common-libs >= 1.11.0
+mfd-devcon >= 2.0.0
+mfd-typing >= 1.23.0
+mfd-package-manager >= 3, <4
+mfd-network-adapter >= 14, <15
+mfd-kvm >= 3.12.0, < 4
+mfd-hyperv >= 2.1.0, < 3
+mfd-esxi >= 3.2.0, < 4
+mfd-model[config] >= 0.9.0
+mfd-mount >= 1.8.0
+mfd-base-tool >= 2.7.0
+mfd-sysctl >= 1.6.0, < 2
+mfd-dmesg >= 1.20.0, < 2
+mfd_event_log >= 0.9.0, <1
