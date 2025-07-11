@@ -1,0 +1,19 @@
+# tool - corresponding package
+adduser - shadow-utils
+awk - gawk
+cat - coreutils
+chpasswd - shadow-utils
+dmidecode - dmidecode
+echo - coreutils
+grep - grep
+kedr - kedr
+mpstat - sysstat
+nproc - coreutils
+print - cups
+sar - sysstat
+sed - sed
+service - chkconfig
+systemctl - systemd
+top - procps-ng
+userdel - shadow-utils
+which - which
