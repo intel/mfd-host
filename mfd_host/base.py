@@ -368,6 +368,7 @@ class Host(ABC):
                     if interface_model.random_interface is None
                     else interface_model.random_interface,
                     all_interfaces=None if interface_model.all_interfaces is None else interface_model.all_interfaces,
+                    mac_address=None if interface_model.mac_address is None else interface_model.mac_address.lower(),
                 )
                 if info:
                     filtered_info.extend([(x, interface_model) for x in info])
