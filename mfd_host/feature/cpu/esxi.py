@@ -4,8 +4,11 @@
 
 import logging
 import re
+from time import sleep
 
-from mfd_common_libs import add_logging_level, log_levels
+from mfd_common_libs import add_logging_level, log_levels, TimeoutCounter
+from mfd_connect.process import RemoteProcess
+
 from mfd_host.exceptions import CPUFeatureExecutionError, CPUFeatureException
 from mfd_host.feature.cpu.base import BaseFeatureCPU
 from mfd_network_adapter.data_structures import State
@@ -62,3 +65,73 @@ class ESXiCPU(BaseFeatureCPU):
             f'esxcli system settings advanced set {value} -o "/Numa/LocalityWeightActionAffinity"',
             custom_exception=CPUFeatureExecutionError,
         )
+
+    def start_cpu_measurement(self) -> RemoteProcess:
+        """
+        Start CPU measurement on host.
+
+        :return: Handle to process
+        """
+        logger.log(level=log_levels.MODULE_DEBUG, msg="Start CPU measurement on host")
+        return self._connection.start_process(command="esxtop -b -n 8 -d3", log_file=True, shell=True)
+
+    def stop_cpu_measurement(self, process: RemoteProcess, process_name: str) -> int:
+        """
+        Stop CPU measurement process.
+
+        :param process: Process handle
+        :param process_name: process name to filter CPU usage
+        :return: Average CPU usage percentage
+        """
+        logger.log(level=log_levels.MODULE_DEBUG, msg="Stop CPU measurement on host")
+        if process.running:
+            process.stop()
+            timeout = TimeoutCounter(5)
+            while not timeout:
+                if not process.running:
+                    break
+                sleep(1)
+            else:
+                process.kill()
+                timeout = TimeoutCounter(5)
+                while not timeout:
+                    if not process.running:
+                        break
+                    sleep(1)
+                if process.running:
+                    raise RuntimeError("CPU measurement process is still running after stop and kill.")
+
+        return self.parse_cpu_usage(process_name=process_name, process=process)
+
+    def parse_cpu_usage(self, process_name: str, process: RemoteProcess) -> int:
+        """
+        Parse CPU usage from esxtop output.
+
+        :param process_name: process_name name to filter CPU usage
+        :param process: Process handle
+        :return: average CPU usage percentage
+        """
+        parsed_file_path = "/tmp/parsed_output.txt"
+        command = (
+            f"cut -d, -f`awk -F, '{{for (i=1;i<=NF;i++){{if ($i ~/Group Cpu.*{process_name}).*Used/) "
+            f"{{print i}}}}}}' {process.log_path}` {process.log_path}>{parsed_file_path}"
+        )
+        self._connection.execute_command(command=command, shell=True)
+        p = self._connection.path(process.log_path)
+        p.unlink()
+        try:
+            parsed_file_path = self._connection.path(parsed_file_path)
+            file_content = parsed_file_path.read_text()
+            cpu_list = []
+            for line in file_content.splitlines()[1:]:
+                try:
+                    cpu_list.append(float(line.strip('"')))
+                except ValueError:
+                    continue
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to read parsed CPU usage output file due to - {e}.")
+
+        p = self._connection.path(parsed_file_path)
+        p.unlink()
+        return round(sum(cpu_list) / len(cpu_list)) if cpu_list else 0
