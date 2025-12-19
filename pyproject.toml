@@ -12,7 +12,7 @@ dependencies = { file = ["requirements.txt"] }
 name = "mfd-host"
 description = "MFD Host provides a unified Python interface for managing and interacting with Systems Under Tests (SUTs) AKA Hosts and their capabilities across multiple operating systems."
 requires-python = ">=3.10, <3.14"
-version = "2.0.0"
+version = "2.1.0"
 dynamic = ["dependencies"]
 license-files = ["LICENSE.md", "AUTHORS.md"]
 readme = {file = "README.md", content-type = "text/markdown"}
