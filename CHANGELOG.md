@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v2.2.0 (2026-04-02)
+
+### Features
+
+- Added two new methods to WindowsService in mfd_host/feature/service/windows.py:
+  ([`1fb3b9e`](https://github.com/intel/mfd-host/commit/1fb3b9ef829b695a7857e879f2abfbe825c9bc12))
+
+
 ## v2.1.0 (2025-12-19)
 
 ### Continuous Integration
