@@ -8,7 +8,7 @@ import pytest
 from mfd_common_libs.exceptions import UnexpectedOSException
 from mfd_connect import RPyCConnection
 from mfd_network_adapter import NetworkInterface
-from mfd_typing import OSName, PCIAddress
+from mfd_typing import MACAddress, OSName, PCIAddress
 from mfd_typing.network_interface import LinuxInterfaceInfo, InterfaceType
 
 from mfd_model.config import HostModel, NetworkInterfaceModelBase as NetworkInterfaceModel
@@ -248,6 +248,35 @@ class TestHostCreation:
             LinuxInterfaceInfo(name="eth2"),
         ]
         filtered_info = [(LinuxInterfaceInfo(name="eth0"), model)]
+        assert (
+            host._get_filtered_interface_info_by_topology(interfaces_info=interfaces_info, ignore_instantiate=False)
+            == filtered_info
+        )
+
+    def test__get_filtered_interface_info_by_topology_with_mac_address(self, host):
+        mac_str = "aa:bb:cc:dd:ee:ff"
+        model = NetworkInterfaceModel(mac_address=mac_str, instantiate=True)
+        host.topology.network_interfaces = [model]
+        interfaces_info = [
+            LinuxInterfaceInfo(mac_address=MACAddress(mac_str)),
+            LinuxInterfaceInfo(mac_address=MACAddress("11:22:33:44:55:66")),
+            LinuxInterfaceInfo(mac_address=MACAddress("aa:bb:cc:dd:ee:00")),
+        ]
+        filtered_info = [(LinuxInterfaceInfo(mac_address=MACAddress(mac_str)), model)]
+        assert (
+            host._get_filtered_interface_info_by_topology(interfaces_info=interfaces_info, ignore_instantiate=False)
+            == filtered_info
+        )
+
+    def test__get_filtered_interface_info_by_topology_with_mac_address_none(self, host):
+        model = NetworkInterfaceModel(mac_address=None, instantiate=True)
+        host.topology.network_interfaces = [model]
+        interfaces_info = [
+            LinuxInterfaceInfo(mac_address=MACAddress("aa:bb:cc:dd:ee:ff")),
+            LinuxInterfaceInfo(mac_address=MACAddress("11:22:33:44:55:66")),
+            LinuxInterfaceInfo(mac_address=MACAddress("aa:bb:cc:dd:ee:00")),
+        ]
+        filtered_info = [(info, model) for info in interfaces_info]
         assert (
             host._get_filtered_interface_info_by_topology(interfaces_info=interfaces_info, ignore_instantiate=False)
             == filtered_info
