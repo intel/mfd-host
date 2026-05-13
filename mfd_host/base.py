@@ -10,6 +10,7 @@ from typing import Optional, Union, List
 from mfd_common_libs import add_logging_level, log_levels
 from mfd_typing import OSName, PCIAddress, PCIDevice
 from mfd_typing.network_interface import InterfaceType, InterfaceInfo
+from mfd_typing.mac_address import MACAddress
 
 from .exceptions import HostConnectedOSNotSupported, NetworkInterfaceRefreshException, HostConnectionTypeNotSupported
 from .feature.stats import BaseFeatureStats, StatsFeatureType
@@ -367,6 +368,9 @@ class Host(ABC):
                     random_interface=None
                     if interface_model.random_interface is None
                     else interface_model.random_interface,
+                    mac_address=None
+                    if interface_model.mac_address is None
+                    else MACAddress(addr=interface_model.mac_address),
                     all_interfaces=None if interface_model.all_interfaces is None else interface_model.all_interfaces,
                 )
                 if info:
