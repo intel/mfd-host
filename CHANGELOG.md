@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v2.3.0 (2026-05-15)
+
+### Features
+
+- Allow filtering interface using mac_address
+  ([`15772b9`](https://github.com/intel/mfd-host/commit/15772b9511b179009c38bec86ede75b3c563752f))
+
+
 ## v2.2.0 (2026-04-02)
 
 ### Features

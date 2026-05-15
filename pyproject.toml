@@ -8,20 +8,5 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
 
-[project]
-name = "mfd-host"
-description = "MFD Host provides a unified Python interface for managing and interacting with Systems Under Tests (SUTs) AKA Hosts and their capabilities across multiple operating systems."
-requires-python = ">=3.10, <3.14"
-version = "2.2.0"
-dynamic = ["dependencies"]
-license-files = ["LICENSE.md", "AUTHORS.md"]
-readme = {file = "README.md", content-type = "text/markdown"}
-
-[project.urls]
-Homepage = "https://github.com/intel/mfd"
-Repository = "https://github.com/intel/mfd-host"
-Issues = "https://github.com/intel/mfd-host/issues"
-Changelog = "https://github.com/intel/mfd-host/blob/main/CHANGELOG.md"
-
 [tool.setuptools.packages.find]
 exclude = ["examples", "tests*", "sphinx-doc"]
