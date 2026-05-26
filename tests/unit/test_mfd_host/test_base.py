@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Intel Corporation
+# Copyright (C) 2025-2026 Intel Corporation
 # SPDX-License-Identifier: MIT
 """Tests for `mfd_host` package."""
 
@@ -15,8 +15,9 @@ from mfd_model.config import HostModel, NetworkInterfaceModelBase as NetworkInte
 
 
 from mfd_host import Host
+from mfd_host.efishell import EFIShellHost
 from mfd_host.esxi import ESXiHost
-from mfd_host.exceptions import HostConnectedOSNotSupported
+from mfd_host.exceptions import HostConnectedOSNotSupported, HostConnectionTypeNotSupported
 from mfd_host.freebsd import FreeBSDHost
 from mfd_host.linux import LinuxHost
 from mfd_host.windows import WindowsHost
@@ -57,9 +58,15 @@ class TestHostCreation:
 
         assert isinstance(Host(connection=conn), ESXiHost)
 
-    def test_unsupported_os(self, mocker):
+    def test_efishell_host_created(self, mocker):
         conn = mocker.create_autospec(RPyCConnection)
         conn.get_os_name.return_value = OSName.EFISHELL
+
+        assert isinstance(Host(connection=conn), EFIShellHost)
+
+    def test_unsupported_os(self, mocker):
+        conn = mocker.create_autospec(RPyCConnection)
+        conn.get_os_name.return_value = OSName.MELLANOX
 
         with pytest.raises(HostConnectedOSNotSupported):
             Host(connection=conn)
@@ -364,3 +371,86 @@ class TestHostCreation:
         interface_info_0 = LinuxInterfaceInfo(name="eth0", pci_address=pci_address_0)
         assert Host._are_interfaces_same(interface, interface_info_0)
         assert not Host._are_interfaces_same(interface, interface_info_1)
+
+
+class TestEFIShellHostProperties:
+    @pytest.fixture
+    def efishell_host(self, mocker):
+        connection = mocker.create_autospec(RPyCConnection)
+        connection.get_os_name.return_value = OSName.EFISHELL
+        host = Host(connection=connection)
+
+        assert isinstance(host, EFIShellHost)
+        return host
+
+    def test_network_property(self, efishell_host, mocker):
+        expected_network = object()
+        mocked_owner = mocker.patch("mfd_network_adapter.NetworkAdapterOwner", return_value=expected_network)
+
+        assert efishell_host.network is expected_network
+        assert efishell_host.network is expected_network
+        mocked_owner.assert_called_once_with(connection=efishell_host.connection, cli_client=efishell_host.cli_client)
+
+    def test_driver_property(self, efishell_host, mocker):
+        expected_driver = object()
+        mocked_driver = mocker.patch("mfd_package_manager.PackageManager", return_value=expected_driver)
+
+        assert efishell_host.driver is expected_driver
+        assert efishell_host.driver is expected_driver
+        mocked_driver.assert_called_once_with(connection=efishell_host.connection)
+
+    def test_event_property_unsupported_for_efishell(self, efishell_host):
+        with pytest.raises(HostConnectionTypeNotSupported):
+            _ = efishell_host.event
+
+    def test_virtualization_property_unsupported_for_efishell(self, efishell_host):
+        with pytest.raises(HostConnectedOSNotSupported):
+            _ = efishell_host.virtualization
+
+    def test_utils_property(self, efishell_host, mocker):
+        expected_utils = object()
+        mocked_utils = mocker.patch("mfd_host.feature.utils.BaseFeatureUtils", return_value=expected_utils)
+
+        assert efishell_host.utils is expected_utils
+        assert efishell_host.utils is expected_utils
+        mocked_utils.assert_called_once_with(connection=efishell_host.connection, host=efishell_host)
+
+    def test_memory_property(self, efishell_host, mocker):
+        expected_memory = object()
+        mocked_memory = mocker.patch("mfd_host.feature.memory.BaseFeatureMemory", return_value=expected_memory)
+
+        assert efishell_host.memory is expected_memory
+        assert efishell_host.memory is expected_memory
+        mocked_memory.assert_called_once_with(connection=efishell_host.connection, host=efishell_host)
+
+    def test_stats_property(self, efishell_host, mocker):
+        expected_stats = object()
+        mocked_stats = mocker.patch("mfd_host.base.BaseFeatureStats", return_value=expected_stats)
+
+        assert efishell_host.stats is expected_stats
+        assert efishell_host.stats is expected_stats
+        mocked_stats.assert_called_once_with(connection=efishell_host.connection, host=efishell_host)
+
+    def test_cpu_property(self, efishell_host, mocker):
+        expected_cpu = object()
+        mocked_cpu = mocker.patch("mfd_host.feature.cpu.BaseFeatureCPU", return_value=expected_cpu)
+
+        assert efishell_host.cpu is expected_cpu
+        assert efishell_host.cpu is expected_cpu
+        mocked_cpu.assert_called_once_with(connection=efishell_host.connection, host=efishell_host)
+
+    def test_service_property(self, efishell_host, mocker):
+        expected_service = object()
+        mocked_service = mocker.patch("mfd_host.feature.service.BaseFeatureService", return_value=expected_service)
+
+        assert efishell_host.service is expected_service
+        assert efishell_host.service is expected_service
+        mocked_service.assert_called_once_with(connection=efishell_host.connection, host=efishell_host)
+
+    def test_device_property(self, efishell_host, mocker):
+        expected_device = object()
+        mocked_device = mocker.patch("mfd_host.feature.device.BaseFeatureDevice", return_value=expected_device)
+
+        assert efishell_host.device is expected_device
+        assert efishell_host.device is expected_device
+        mocked_device.assert_called_once_with(connection=efishell_host.connection, host=efishell_host)

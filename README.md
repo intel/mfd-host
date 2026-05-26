@@ -301,6 +301,7 @@ Here is a place to write what OSes support your MFD module:
 * WINDOWS
 * FREEBSD
 * ESXI
+* EFI SHELL
 
 ## Issue reporting
 

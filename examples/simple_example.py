@@ -7,8 +7,11 @@
 
 import logging
 
+import mfd_connect
 from mfd_connect import RPyCConnection
 
+from mfd_host import Host
+from mfd_host.efishell import EFIShellHost
 from mfd_host.linux import LinuxHost
 from mfd_host.windows import WindowsHost
 from mfd_host.freebsd import FreeBSDHost
@@ -34,3 +37,10 @@ def freebsd_driver_example():
     connection = RPyCConnection(ip="20.20.20.20")
     host = FreeBSDHost(connection=connection)
     host.driver.load_module(module_path="test/test")
+
+
+def efishell_simple_example():
+    """Simple EFIShell host instantiation using RshellConnection."""
+    connection = getattr(mfd_connect, "RshellConnection")(ip="30.30.30.30")
+    host = Host(connection=connection)
+    assert isinstance(host, EFIShellHost)
