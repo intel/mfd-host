@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Intel Corporation
+# Copyright (C) 2025-2026 Intel Corporation
 # SPDX-License-Identifier: MIT
 """Module for Host."""
 
@@ -75,6 +75,7 @@ class Host(ABC):
         from .windows import WindowsHost
         from .esxi import ESXiHost
         from .freebsd import FreeBSDHost
+        from .efishell import EFIShellHost
 
         os_name = connection.get_os_name()
         os_name_to_class = {
@@ -82,6 +83,7 @@ class Host(ABC):
             OSName.WINDOWS: WindowsHost,
             OSName.ESXI: ESXiHost,
             OSName.FREEBSD: FreeBSDHost,
+            OSName.EFISHELL: EFIShellHost,
         }
 
         if os_name not in os_name_to_class.keys():
