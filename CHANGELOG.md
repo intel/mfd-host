@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v2.4.0 (2026-06-19)
+
+### Chores
+
+- Bump pytest and mfd-code-quality requirements
+  ([`0ea5100`](https://github.com/intel/mfd-host/commit/0ea5100a6e048092ab28c92868c0fa34915e7912))
+
+- Fix pyproject.toml after CI release
+  ([`1f09c1a`](https://github.com/intel/mfd-host/commit/1f09c1aa8a5a320b25ddd939edf93807d0b09da8))
+
+### Features
+
+- Add support for EFI Shell OS and related tests
+  ([`c6a9440`](https://github.com/intel/mfd-host/commit/c6a94405598b9c50e832e8fa9c1ad46f64116c12))
+
+
 ## v2.3.0 (2026-05-15)
 
 ### Features
